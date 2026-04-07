@@ -1,4 +1,4 @@
-# Career Catalyst Agent — Wins Tracker
+# Career Catalyst Agent — Career Capital Agent
 
 ## Why this exists
 
@@ -181,7 +181,7 @@ This is Module 1 of 4 planned modules:
 
 | Module | Status |
 |---|---|
-| Module 1 — Wins Tracker | ✅ Live |
+| Module 1 — Career Capital Agent | ✅ Live |
 | Module 2 — Job Discovery | 🔜 Coming soon |
 | Module 3 — Skill Gap Insights | 🔜 Coming soon |
 | Module 4 — Career Roadmap | 🔜 Coming soon |
