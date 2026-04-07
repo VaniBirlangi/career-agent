@@ -12,7 +12,7 @@ from datetime import datetime, date
 import json
 
 st.set_page_config(
-    page_title="Career Agent – Wins Tracker",
+    page_title="Career Capital Agent",
     page_icon="⭐",
     layout="centered"
 )
@@ -242,7 +242,7 @@ def call_claude(prompt, key):
 # ── Sidebar ───────────────────────────────────
 with st.sidebar:
     st.markdown("## Career Agent")
-    st.caption("v1.3 · Wins Tracker")
+    st.caption("v1.3 · Career Capital Agent")
     st.markdown("---")
     api_key = st.text_input("Anthropic API key", type="password", placeholder="sk-ant-...")
     st.markdown("### Your profile")
@@ -277,7 +277,7 @@ with st.sidebar:
     st.caption("Built with Streamlit + Claude API")
 
 # ── Main ──────────────────────────────────────
-st.markdown("## Wins Tracker")
+st.markdown("## Career Capital Agent")
 st.markdown("Turn your daily wins into promotion bullets, interview stories, and year-end reviews — before you forget them.")
 st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
