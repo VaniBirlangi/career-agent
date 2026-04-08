@@ -129,21 +129,43 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ── Demo mode flag ────────────────────────────
+IS_DEMO = os.environ.get("IS_DEMO", "false").lower() == "true"
+
 # ── Storage ───────────────────────────────────
 DATA_FILE = "wins.json"
 
+DEFAULT_DATA = {
+    "profile": {"current_role": "", "target_role": ""},
+    "okr_sets": [], "wins": []
+}
+
 def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    return {
-        "profile": {"current_role": "Data Engineering Manager", "target_role": "Senior EM, Data & AI at Microsoft"},
-        "okr_sets": [], "wins": []
-    }
+    if IS_DEMO:
+        # Session-based — no file, each visitor gets clean isolated data
+        if "persistent_data" not in st.session_state:
+            st.session_state.persistent_data = {
+                "profile": {"current_role": "", "target_role": ""},
+                "okr_sets": [], "wins": []
+            }
+        return st.session_state.persistent_data
+    else:
+        # File-based — permanent local storage
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, "r") as f:
+                return json.load(f)
+        return {
+            "profile": {"current_role": "Data Engineering Manager", "target_role": "Senior EM, Data & AI at Microsoft"},
+            "okr_sets": [], "wins": []
+        }
 
 def save_data(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+    if IS_DEMO:
+        # Save to session state only — no file write
+        st.session_state.persistent_data = data
+    else:
+        with open(DATA_FILE, "w") as f:
+            json.dump(data, f, indent=2)
 
 def get_active_okr_set(data):
     return data["okr_sets"][-1] if data["okr_sets"] else None
@@ -279,6 +301,9 @@ with st.sidebar:
 # ── Main ──────────────────────────────────────
 st.markdown("## Career Capital Agent")
 st.markdown("Turn your daily wins into promotion bullets, interview stories, and year-end reviews — before you forget them.")
+
+if IS_DEMO:
+    st.info("🔒 **Live demo** — your data resets when you close the browser. To save your wins permanently, [clone the repo and run locally](https://github.com/VaniBirlangi/career-catalyst-agent).")
 st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
 # ── Log a Win ─────────────────────────────────
