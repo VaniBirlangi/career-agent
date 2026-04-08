@@ -498,7 +498,7 @@ with tab1:
         with st.expander(f"Data Points for your Year-end Performance Review — {total_dp_count} across all wins", expanded=False):
             st.markdown(f'<table class="grid-table"><thead><tr><th>Win</th><th>Year-end data point</th></tr></thead><tbody>{all_dp_rows}</tbody></table>', unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
-            st.download_button("Download all data points", data=all_dp_text.strip(), file_name="all_data_points.txt", mime="text/plain", key="dl_dp")
+            st.download_button("Download all", data=all_dp_text.strip(), file_name="all_data_points.txt", mime="text/plain", key="dl_dp")
 
     if not all_wins:
         st.markdown('<div class="empty-state">Log your first win to generate your year-end review</div>', unsafe_allow_html=True)
@@ -551,7 +551,7 @@ with tab1:
             if rows:
                 st.markdown(f'<table class="grid-table"><thead><tr><th>{col_header}</th><th>Key results</th></tr></thead><tbody>{rows}</tbody></table>', unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
-                st.download_button("Download year-end review", data=full, file_name=f"yearend_{review_year}.txt", mime="text/plain", use_container_width=True)
+                st.download_button("Download", data=full, file_name=f"yearend_{review_year}.txt", mime="text/plain", use_container_width=True)
 
 # ── Tab 2: Promotion Bullets ─────────────────
 with tab2:
@@ -568,7 +568,7 @@ with tab2:
         with st.expander(f"All promotion bullets — {sum(len(w.get('output',{}).get('promotion_bullets',[])) for w in data['wins'])} bullets", expanded=False):
             st.markdown(f'<table class="grid-table"><thead><tr><th>Win</th><th>Promotion bullet</th></tr></thead><tbody>{all_bullets_rows}</tbody></table>', unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
-            st.download_button("Download all bullets", data=all_bullets_text, file_name="all_promotion_bullets.txt", mime="text/plain", use_container_width=True)
+            st.download_button("Download all", data=all_bullets_text, file_name="all_promotion_bullets.txt", mime="text/plain", use_container_width=True)
     else:
         st.markdown('<div class="empty-state">Log a win to see your promotion bullets here</div>', unsafe_allow_html=True)
 
@@ -580,6 +580,18 @@ with tab3:
     else:
         story_lookup = {s["title"]: s for s in output_data.get("star_stories", [])}
         st.markdown('<div class="section-header">Questions mapped to your best story — latest win</div>', unsafe_allow_html=True)
+
+        # Build full download text for all questions
+        all_q_text = ""
+        for i, q in enumerate(output_data.get("interview_questions", [])):
+            matched = story_lookup.get(q["best_story"])
+            all_q_text += f"Q{i+1}: {q['question']}\nWhy this matters: {q['why_relevant']}\nBest answered with: {q['best_story']}\n"
+            if matched:
+                all_q_text += f"\nSituation: {matched['situation']}\nTask: {matched['task']}\nAction: {matched['action']}\nResult: {matched['result']}\n"
+            all_q_text += "\n---\n\n"
+
+        st.download_button("Download all", data=all_q_text.strip(), file_name="interview_prep.txt", mime="text/plain", key="dl_all_q")
+
         for i, q in enumerate(output_data.get("interview_questions", [])):
             with st.expander(f"Q{i+1}: {q['question']}", expanded=False):
                 st.markdown(f"**Why this matters:** {q['why_relevant']}")
@@ -590,6 +602,8 @@ with tab3:
                         for label, key, cls in [("Situation","situation","s-label"),("Task","task","t-label"),("Action","action","a-label"),("Result","result","r-label")]:
                             st.markdown(f'<div class="star-label {cls}">{label}</div>', unsafe_allow_html=True)
                             st.markdown(f'<div class="preview-card">{matched[key]}</div>', unsafe_allow_html=True)
+                    q_text = f"Q{i+1}: {q['question']}\nWhy this matters: {q['why_relevant']}\nBest answered with: {q['best_story']}\n\nSituation: {matched['situation']}\nTask: {matched['task']}\nAction: {matched['action']}\nResult: {matched['result']}"
+                    st.download_button("Download", data=q_text, file_name=f"question_{i+1}.txt", mime="text/plain", key=f"dl_q_{i}")
 
 # ── Tab 4: Story Bank ─────────────────────────
 with tab4:
@@ -599,6 +613,14 @@ with tab4:
             all_stories.append({"win_date": w["date"][:10], "win_impact": w["impact"], "win_title": w["win"], **s})
     if all_stories:
         st.markdown(f'<div class="section-header">{len(all_stories)} STAR stories across all wins</div>', unsafe_allow_html=True)
+
+        # Build full download text for all stories
+        all_stories_text = ""
+        for i, story in enumerate(all_stories):
+            all_stories_text += f"STORY {i+1}: {story['title']}\nAngle: {story['angle']}\nDate: {story['win_date']}\n\nSituation: {story['situation']}\nTask: {story['task']}\nAction: {story['action']}\nResult: {story['result']}\n\n---\n\n"
+
+        st.download_button("Download all", data=all_stories_text.strip(), file_name="all_stories.txt", mime="text/plain", key="dl_all_stories")
+
         for i, story in enumerate(all_stories):
             with st.expander(f"{story['title']}  ·  {story['angle']}  ·  {story['win_date']}", expanded=False):
                 for label, key, cls in [("Situation","situation","s-label"),("Task","task","t-label"),("Action","action","a-label"),("Result","result","r-label")]:
@@ -606,6 +628,6 @@ with tab4:
                     st.markdown(f'<div class="preview-card">{story[key]}</div>', unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
                 story_text = f"STORY: {story['title']}\nAngle: {story['angle']}\nDate: {story['win_date']}\n\nSituation: {story['situation']}\n\nTask: {story['task']}\n\nAction: {story['action']}\n\nResult: {story['result']}"
-                st.download_button("Download this story", data=story_text, file_name=f"story_{i+1}.txt", mime="text/plain", key=f"dl_story_{i}")
+                st.download_button("Download", data=story_text, file_name=f"story_{i+1}.txt", mime="text/plain", key=f"dl_story_{i}")
     else:
         st.markdown('<div class="empty-state">Log a win to build your story library</div>', unsafe_allow_html=True)
